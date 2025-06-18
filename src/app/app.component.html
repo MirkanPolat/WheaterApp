@@ -1,61 +1,72 @@
-<h1>🌤️ WetterApp</h1>
+<div class="weather-app">
+  <h1><span class="weather-emoji">🌤️</span> WetterApp</h1>
 
-<div class="search-container">
-  <div class="autocomplete-wrapper">
-    <input 
-      [(ngModel)]="city" 
-      placeholder="Stadt eingeben..." 
-      (input)="onCityInput()"
-      (keyup.enter)="searchCity()"
-      (blur)="hideSuggestions()"
-      (focus)="onCityInput()"
-      class="city-input">
+  <div class="search-container">
+    <div class="autocomplete-wrapper">
+      <input 
+        [(ngModel)]="city" 
+        placeholder="✨ Magische Stadt-Suche..." 
+        (input)="onCityInput()"
+        (keyup.enter)="searchCity()"
+        (blur)="hideSuggestions()"
+        (focus)="onCityInput()"
+        class="city-input">
     
-    <!-- Autocomplete Dropdown -->
-    <div *ngIf="showSuggestions && citySuggestions.length > 0" class="suggestions-dropdown">
-      <div 
-        *ngFor="let suggestion of citySuggestions" 
-        class="suggestion-item"
-        (mousedown)="selectCity(suggestion)">
-        <div class="city-name">{{ suggestion.name }}</div>
-        <div class="city-details">{{ suggestion.country }}<span *ngIf="suggestion.admin1">, {{ suggestion.admin1 }}</span></div>
+      <div *ngIf="showSuggestions && citySuggestions.length > 0" class="suggestions-dropdown">
+        <div 
+          *ngFor="let suggestion of citySuggestions; trackBy: trackBySuggestion" 
+          class="suggestion-item"
+          (mousedown)="selectCity(suggestion)">
+          <div class="city-name">🏙️ {{ suggestion.name }}</div>
+          <div class="city-details">🌍 {{ suggestion.country }}<span *ngIf="suggestion.admin1">, {{ suggestion.admin1 }}</span></div>
+        </div>
+      </div>
+      
+      <div *ngIf="showSuggestions && citySuggestions.length === 0 && city.length >= 2" class="no-results">
+        🔍 Keine magischen Städte gefunden...
       </div>
     </div>
     
-    <!-- Keine Ergebnisse -->
-    <div *ngIf="showSuggestions && citySuggestions.length === 0 && city.length >= 2" class="no-results">
-      Keine Städte gefunden
+    <button (click)="searchCity()" [disabled]="loading" class="search-btn">
+      <span *ngIf="!loading">🔮 Wetter zaubern</span>
+      <span *ngIf="loading">✨ Magie wirkt...</span>
+    </button>
+  </div>
+
+  <div *ngIf="loading" class="loading">
+    🌟 Die Wetter-Geister werden beschworen...
+  </div>
+  
+  <div *ngIf="error" class="error">
+    💥 {{ error }}
+  </div>
+
+  <div *ngIf="weatherData && !loading" class="weather-container">
+    <h2 class="city-title">{{ cityName }}</h2>
+    
+    <div class="current-weather">
+      <h3>🌟 Aktueller Zauber</h3>
+      <span class="current-temp">{{ weatherData.current_weather.temperature }}°C</span>
+      <div class="current-desc">
+        {{ getWeatherEmoji(weatherData.current_weather.weathercode) }} 
+        {{ getWeatherDescription(weatherData.current_weather.weathercode) }}
+      </div>
     </div>
-  </div>
-  
-  <button (click)="searchCity()" [disabled]="loading">
-    <span *ngIf="!loading">🔍 Suchen</span>
-    <span *ngIf="loading">⏳ Laden...</span>
-  </button>
-</div>
-
-<div *ngIf="loading" class="loading">Wetterdaten werden geladen...</div>
-<div *ngIf="error" class="error">{{ error }}</div>
-
-<div *ngIf="weatherData && !loading" class="weather-container">
-  <h2>{{ cityName }}</h2>
-  
-  <!-- Aktuelles Wetter -->
-  <div class="current-weather">
-    <h3>Aktuell</h3>
-    <p>🌡️ {{ weatherData.current_weather.temperature }}°C</p>
-    <p>🌤️ {{ getWeatherDescription(weatherData.current_weather.weathercode) }}</p>
-  </div>
-  
-  <!-- 7-Tage Vorhersage -->
-  <div class="forecast">
-    <h3>7-Tage Vorhersage</h3>
-    <div class="forecast-list">
-      <div *ngFor="let time of weatherData.daily.time; let i = index" class="forecast-day">
-        <p class="date">{{ time | date }}</p>
-        <p>{{ getWeatherDescription(weatherData.daily.weathercode[i]) }}</p>
-        <p>🌡️ {{ weatherData.daily.temperature_2m_min[i] | number:'1.0-0' }} - {{ weatherData.daily.temperature_2m_max[i] | number:'1.0-0' }}°C</p>
-        <p>💧 {{ weatherData.daily.precipitation_sum[i] }} mm</p>
+    
+    <div class="forecast">
+      <h3>🔮 7-Tage Prophezeiung</h3>
+      <div class="forecast-list">
+        <div *ngFor="let time of weatherData.daily.time; let i = index; trackBy: trackByForecast" class="forecast-day">
+          <p class="date">{{ time | date:'EEE, dd.MM' }}</p>
+          <div class="weather-desc">
+            {{ getWeatherEmoji(weatherData.daily.weathercode[i]) }} 
+            {{ getWeatherDescription(weatherData.daily.weathercode[i]) }}
+          </div>
+          <p class="temp-range">
+            🌡️ {{ weatherData.daily.temperature_2m_min[i] | number:'1.0-0' }}° - {{ weatherData.daily.temperature_2m_max[i] | number:'1.0-0' }}°C
+          </p>
+          <p class="precipitation">💧 {{ weatherData.daily.precipitation_sum[i] }} mm</p>
+        </div>
       </div>
     </div>
   </div>

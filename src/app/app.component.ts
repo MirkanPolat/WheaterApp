@@ -9,7 +9,7 @@ import { debounceTime, Subject } from 'rxjs';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss' 
+  styleUrl: './app.component.scss'
 })
 export class AppComponent {
   city = '';
@@ -24,12 +24,20 @@ export class AppComponent {
   searchSubject = new Subject<string>();
 
   constructor(private weather: WeatherService) {
-    // Debounce für die Suche - wartet 300ms nach der letzten Eingabe
     this.searchSubject.pipe(
       debounceTime(300)
     ).subscribe(query => {
       this.searchCities(query);
     });
+  }
+
+  // TrackBy functions for performance
+  trackBySuggestion(index: number, item: CityResult): number {
+    return item.id;
+  }
+
+  trackByForecast(index: number, item: string): number {
+    return index;
   }
 
   // Wird bei jeder Eingabe aufgerufen
@@ -83,17 +91,16 @@ export class AppComponent {
       
       // Wetterdaten für diese Koordinaten abrufen
       this.weatherData = await this.weather.getWeather(coords.latitude, coords.longitude);
-      console.log(this.weatherData); // Zum Debuggen
     } catch (err) {
       console.error('Fehler beim Abrufen:', err);
-      this.error = err instanceof Error ? err.message : 'Ein Fehler ist aufgetreten';
+      this.error = err instanceof Error ? err.message : 'Ein magischer Fehler ist aufgetreten! 🔮✨';
       this.weatherData = null;
     } finally {
       this.loading = false;
     }
   }
 
-  // Standard-Suche (Enter oder Button)
+  // Standard Suche 
   async searchCity() {
     await this.searchCityWeather();
   }
@@ -105,27 +112,50 @@ export class AppComponent {
     }, 200); // Kurze Verzögerung, damit Klick auf Vorschlag noch funktioniert
   }
 
-  // Wettercode in lesbaren Text umwandeln
+  // Verbesserte Wetterbeschreibungen mit Emojis
   getWeatherDescription(code: number): string {
     const weatherCodes: {[key: number]: string} = {
-      0: 'Klar',
-      1: 'Überwiegend klar',
+      0: 'Kristallklar',
+      1: 'Überwiegend sonnig',
       2: 'Teilweise bewölkt',
       3: 'Bewölkt',
-      45: 'Nebel',
-      48: 'Reifnebel',
-      51: 'Leichter Nieselregen',
-      53: 'Mäßiger Nieselregen',
-      55: 'Starker Nieselregen',
-      61: 'Leichter Regen',
-      63: 'Mäßiger Regen',
-      65: 'Starker Regen',
-      71: 'Leichter Schneefall',
-      73: 'Mäßiger Schneefall',
-      75: 'Starker Schneefall',
-      95: 'Gewitter',
+      45: 'Mystischer Nebel',
+      48: 'Eisiger Nebel',
+      51: 'Zarter Nieselregen',
+      53: 'Sanfter Nieselregen',
+      55: 'Kräftiger Nieselregen',
+      61: 'Leichter Regenzauber',
+      63: 'Moderater Regentanz',
+      65: 'Intensiver Regensturm',
+      71: 'Zarte Schneeflocken',
+      73: 'Schneeverzauberung',
+      75: 'Schneesturm-Magie',
+      95: 'Donnernde Gewitter-Show',
     };
     
-    return weatherCodes[code] || 'Unbekannt';
+    return weatherCodes[code] || 'Geheimnisvolles Wetter';
+  }
+
+  getWeatherEmoji(code: number): string {
+    const weatherEmojis: {[key: number]: string} = {
+      0: '☀️',
+      1: '🌤️',
+      2: '⛅',
+      3: '☁️',
+      45: '🌫️',
+      48: '🌫️',
+      51: '🌦️',
+      53: '🌧️',
+      55: '🌧️',
+      61: '🌦️',
+      63: '🌧️',
+      65: '⛈️',
+      71: '🌨️',
+      73: '❄️',
+      75: '🌨️',
+      95: '⚡',
+    };
+    
+    return weatherEmojis[code] || '🌈';
   }
 }
