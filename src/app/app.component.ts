@@ -18,7 +18,6 @@ export class AppComponent {
   error = '';
   cityName = '';
   
-  // Autocomplete
   citySuggestions: CityResult[] = [];
   showSuggestions = false;
   searchSubject = new Subject<string>();
@@ -31,7 +30,6 @@ export class AppComponent {
     });
   }
 
-  // TrackBy functions for performance
   trackBySuggestion(index: number, item: CityResult): number {
     return item.id;
   }
@@ -40,7 +38,50 @@ export class AppComponent {
     return index;
   }
 
-  // Wird bei jeder Eingabe aufgerufen
+getWeatherClass(code: number): string {
+  console.log('Weather Code:', code);
+  
+  const weatherMap = {
+    0: 'sunny',
+    1: 'sunny',
+    2: 'sunny',
+    
+    3: 'cloudy',
+    
+    45: 'foggy',
+    48: 'foggy',
+    
+    51: 'rainy',
+    53: 'rainy',
+    55: 'rainy',
+    56: 'rainy',
+    57: 'rainy',
+    
+    61: 'rainy',
+    63: 'rainy',
+    65: 'rainy',
+    66: 'rainy',
+    67: 'rainy',
+    
+    71: 'snowy',
+    73: 'snowy',
+    75: 'snowy',
+    77: 'snowy',
+    
+    80: 'rainy',
+    81: 'rainy',
+    82: 'rainy',
+    85: 'snowy',
+    86: 'snowy',
+    
+    95: 'stormy',
+    96: 'stormy',
+    99: 'stormy',
+  };
+  
+  return weatherMap[code as keyof typeof weatherMap] || 'sunny';
+}
+
   onCityInput() {
     if (this.city.length >= 2) {
       this.searchSubject.next(this.city);
@@ -51,7 +92,6 @@ export class AppComponent {
     }
   }
 
-  // Städte für Autocomplete suchen
   async searchCities(query: string) {
     try {
       this.citySuggestions = await this.weather.searchCities(query);
@@ -61,7 +101,6 @@ export class AppComponent {
     }
   }
 
-  // Stadt aus Vorschlagsliste auswählen
   selectCity(cityResult: CityResult) {
     this.city = cityResult.name;
     this.showSuggestions = false;
@@ -69,7 +108,6 @@ export class AppComponent {
     this.searchCityWeather(cityResult);
   }
 
-  // Wetter für ausgewählte Stadt abrufen
   async searchCityWeather(cityResult?: CityResult) {
     if (!this.city.trim()) return;
     
@@ -80,16 +118,13 @@ export class AppComponent {
     try {
       let coords;
       if (cityResult) {
-        // Koordinaten aus ausgewählter Stadt verwenden
         coords = { latitude: cityResult.latitude, longitude: cityResult.longitude };
         this.cityName = `${cityResult.name}, ${cityResult.country}`;
       } else {
-        // Koordinaten der Stadt abrufen
         coords = await this.weather.getCoordinates(this.city);
         this.cityName = this.city;
       }
       
-      // Wetterdaten für diese Koordinaten abrufen
       this.weatherData = await this.weather.getWeather(coords.latitude, coords.longitude);
     } catch (err) {
       console.error('Fehler beim Abrufen:', err);
@@ -100,19 +135,16 @@ export class AppComponent {
     }
   }
 
-  // Standard Suche 
   async searchCity() {
     await this.searchCityWeather();
   }
 
-  // Vorschläge ausblenden
   hideSuggestions() {
     setTimeout(() => {
       this.showSuggestions = false;
-    }, 200); // Kurze Verzögerung, damit Klick auf Vorschlag noch funktioniert
+    }, 200);
   }
 
-  // Verbesserte Wetterbeschreibungen mit Emojis
   getWeatherDescription(code: number): string {
     const weatherCodes: {[key: number]: string} = {
       0: 'Kristallklar',

@@ -56,7 +56,9 @@
     <div class="forecast">
       <h3>🔮 7-Tage Prophezeiung</h3>
       <div class="forecast-list">
-        <div *ngFor="let time of weatherData.daily.time; let i = index; trackBy: trackByForecast" class="forecast-day">
+        <div *ngFor="let time of weatherData.daily.time; let i = index; trackBy: trackByForecast" 
+             class="forecast-day"
+             [class]="getWeatherClass(weatherData.daily.weathercode[i])">
           <p class="date">{{ time | date:'EEE, dd.MM' }}</p>
           <div class="weather-desc">
             {{ getWeatherEmoji(weatherData.daily.weathercode[i]) }} 
