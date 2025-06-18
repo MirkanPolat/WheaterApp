@@ -190,4 +190,8 @@ getWeatherClass(code: number): string {
     
     return weatherEmojis[code] || '🌈';
   }
+
+  getCurrentYear(): number {
+    return new Date().getFullYear();
+  }
 }
