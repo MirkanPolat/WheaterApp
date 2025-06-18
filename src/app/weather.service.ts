@@ -5,15 +5,25 @@ import { firstValueFrom } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class WeatherService {
   http = inject(HttpClient);
+  
 
-  async getCityWoeid(city: string): Promise<number> {
-    const url = `https://www.metaweather.com/api/location/search/?query=${city}`;
-    const result: any = await firstValueFrom(this.http.get(url));
-    return result[0]?.woeid;
+  async getCoordinates(city: string): Promise<{latitude: number, longitude: number}> {
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`;
+    const response = await firstValueFrom(this.http.get<any>(url));
+    
+    if (!response.results || response.results.length === 0) {
+      throw new Error('Stadt nicht gefunden');
+    }
+    
+    return {
+      latitude: response.results[0].latitude,
+      longitude: response.results[0].longitude
+    };
   }
-
-  async getWeather(woeid: number): Promise<any> {
-    const url = `https://www.metaweather.com/api/location/${woeid}/`;
-    return await firstValueFrom(this.http.get(url));
+  
+  // Wetterdaten abrufen
+  async getWeather(latitude: number, longitude: number): Promise<any> {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum&timezone=auto&current_weather=true`;
+    return await firstValueFrom(this.http.get<any>(url));
   }
 }

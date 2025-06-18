@@ -1,1 +1,67 @@
-<router-outlet></router-outlet>
+<h1>🌤️ WetterApp</h1>
+
+<div class="search-container">
+  <input [(ngModel)]="city" placeholder="Stadt eingeben" (keyup.enter)="searchCity()">
+  <button (click)="searchCity()">🔍 Suchen</button>
+</div>
+
+<div *ngIf="loading">Laden...</div>
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<div *ngIf="weatherData && !loading" class="weather-container">
+  <h2>{{ cityName }}</h2>
+  
+  <!-- Aktuelles Wetter -->
+  <div class="current-weather">
+    <h3>Aktuell</h3>
+    <p>🌡️ {{ weatherData.current_weather.temperature }}°C</p>
+    <p>🌤️ {{ getWeatherDescription(weatherData.current_weather.weathercode) }}</p>
+  </div>
+  
+  <!-- 7-Tage Vorhersage -->
+  <div class="forecast">
+    <h3>7-Tage Vorhersage</h3>
+    <div class="forecast-list">
+      <div *ngFor="let time of weatherData.daily.time; let i = index" class="forecast-day">
+        <p class="date">{{ time | date }}</p>
+        <p>{{ getWeatherDescription(weatherData.daily.weathercode[i]) }}</p>
+        <p>🌡️ {{ weatherData.daily.temperature_2m_min[i] | number:'1.0-0' }} - {{ weatherData.daily.temperature_2m_max[i] | number:'1.0-0' }}°C</p>
+        <p>💧 {{ weatherData.daily.precipitation_sum[i] }} mm</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .search-container {
+    margin: 20px 0;
+  }
+  input {
+    padding: 8px;
+    margin-right: 8px;
+  }
+  button {
+    padding: 8px 16px;
+  }
+  .error {
+    color: red;
+    margin: 10px 0;
+  }
+  .weather-container {
+    margin-top: 20px;
+  }
+  .forecast-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  .forecast-day {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    min-width: 150px;
+  }
+  .date {
+    font-weight: bold;
+  }
+</style>
