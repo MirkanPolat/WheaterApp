@@ -1,11 +1,40 @@
 <h1>🌤️ WetterApp</h1>
 
 <div class="search-container">
-  <input [(ngModel)]="city" placeholder="Stadt eingeben" (keyup.enter)="searchCity()">
-  <button (click)="searchCity()">🔍 Suchen</button>
+  <div class="autocomplete-wrapper">
+    <input 
+      [(ngModel)]="city" 
+      placeholder="Stadt eingeben..." 
+      (input)="onCityInput()"
+      (keyup.enter)="searchCity()"
+      (blur)="hideSuggestions()"
+      (focus)="onCityInput()"
+      class="city-input">
+    
+    <!-- Autocomplete Dropdown -->
+    <div *ngIf="showSuggestions && citySuggestions.length > 0" class="suggestions-dropdown">
+      <div 
+        *ngFor="let suggestion of citySuggestions" 
+        class="suggestion-item"
+        (mousedown)="selectCity(suggestion)">
+        <div class="city-name">{{ suggestion.name }}</div>
+        <div class="city-details">{{ suggestion.country }}<span *ngIf="suggestion.admin1">, {{ suggestion.admin1 }}</span></div>
+      </div>
+    </div>
+    
+    <!-- Keine Ergebnisse -->
+    <div *ngIf="showSuggestions && citySuggestions.length === 0 && city.length >= 2" class="no-results">
+      Keine Städte gefunden
+    </div>
+  </div>
+  
+  <button (click)="searchCity()" [disabled]="loading">
+    <span *ngIf="!loading">🔍 Suchen</span>
+    <span *ngIf="loading">⏳ Laden...</span>
+  </button>
 </div>
 
-<div *ngIf="loading">Laden...</div>
+<div *ngIf="loading" class="loading">Wetterdaten werden geladen...</div>
 <div *ngIf="error" class="error">{{ error }}</div>
 
 <div *ngIf="weatherData && !loading" class="weather-container">
@@ -31,37 +60,3 @@
     </div>
   </div>
 </div>
-
-<style>
-  .search-container {
-    margin: 20px 0;
-  }
-  input {
-    padding: 8px;
-    margin-right: 8px;
-  }
-  button {
-    padding: 8px 16px;
-  }
-  .error {
-    color: red;
-    margin: 10px 0;
-  }
-  .weather-container {
-    margin-top: 20px;
-  }
-  .forecast-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-  }
-  .forecast-day {
-    border: 1px solid #ddd;
-    padding: 15px;
-    border-radius: 8px;
-    min-width: 150px;
-  }
-  .date {
-    font-weight: bold;
-  }
-</style>

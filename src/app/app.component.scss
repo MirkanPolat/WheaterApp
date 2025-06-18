@@ -1,0 +1,156 @@
+.search-container {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .autocomplete-wrapper {
+    position: relative;
+    flex: 1;
+  }
+  
+  .city-input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  
+  .city-input:focus {
+    outline: none;
+    border-color: #007bff;
+  }
+  
+  .suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+  
+  .suggestion-item {
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .suggestion-item:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .suggestion-item:last-child {
+    border-bottom: none;
+  }
+  
+  .city-name {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .city-details {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+  }
+  
+  .no-results {
+    padding: 12px;
+    color: #666;
+    font-style: italic;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+  }
+  
+  button {
+    padding: 12px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  button:hover {
+    background: #0056b3;
+  }
+  
+  button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .loading {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+  }
+  
+  .error {
+    color: red;
+    margin: 10px 0;
+    padding: 10px;
+    background: #ffe6e6;
+    border-radius: 4px;
+  }
+  
+  .weather-container {
+    margin-top: 20px;
+  }
+  
+  .current-weather {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  
+  .forecast-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+  
+  .forecast-day {
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    min-width: 150px;
+    background: white;
+  }
+  
+  .date {
+    font-weight: bold;
+    color: #007bff;
+  }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .search-container {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .forecast-list {
+    flex-direction: column;
+  }
+  
+  .forecast-day {
+    min-width: auto;
+  }
+}

@@ -2,11 +2,30 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 
+export interface CityResult {
+  id: number;
+  name: string;
+  country: string;
+  admin1?: string; // Bundesland/Region
+  latitude: number;
+  longitude: number;
+}
+
 @Injectable({ providedIn: 'root' })
 export class WeatherService {
   http = inject(HttpClient);
   
-
+  // Städte für Autocomplete suchen
+  async searchCities(query: string): Promise<CityResult[]> {
+    if (query.length < 2) return [];
+    
+    const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(query)}&count=10&language=de&format=json`;
+    const response = await firstValueFrom(this.http.get<any>(url));
+    
+    return response.results || [];
+  }
+  
+  // Stadt in Koordinaten umwandeln (Geocoding)
   async getCoordinates(city: string): Promise<{latitude: number, longitude: number}> {
     const url = `https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`;
     const response = await firstValueFrom(this.http.get<any>(url));
